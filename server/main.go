@@ -8,8 +8,8 @@ import (
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 
-	// "github.com/gmlwo530/stack-api-server/controllers"
-	// "github.com/gmlwo530/stack-api-server/models"
+	"github.com/gmlwo530/maru-web-app-project/controllers"
+	myDB "github.com/gmlwo530/maru-web-app-project/db"
 )
 
 func main() {
@@ -17,28 +17,20 @@ func main() {
 	g := gin.Default()
 
 	g.Use(static.Serve("/", static.LocalFile("./web", true)))
-	api := g.Group("/api")
-	api.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
+	
 
-	// db := models.SetupModels()
+	db := myDB.SetupModels()
 
 	// Provide db variable to controllers
 	// Create a middleware that can provide the database instance to every single controller since
 	// they live in another file that can't access the database instance directly
-	// g.Use(func(c *gin.Context) {
-	// 	c.Set("db", db)
-	// 	c.Next()
-	// })
+	g.Use(func(c *gin.Context) {
+		c.Set("db", db)
+		c.Next()
+	})
 
-	// g.GET("/folders", controllers.FindFolders)
-	// g.POST("/folders", controllers.CreateFolder)
-	// g.GET("/folders/:id", controllers.FindFolder)
-	// g.PATCH("/folders/:id", controllers.UpdateFolder)
-	// g.DELETE("/folders/:id", controllers.DeleteFolder)
+	api := g.Group("/api")
+	api.GET("/ping", controllers.GetPing)
 
 	if mode == "release" {
 		port := os.Getenv("PORT")
