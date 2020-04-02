@@ -9,9 +9,13 @@ import (
 )
 
 type createPostInput struct {
+	Title   string `json:"title" binding:"required"`
+	Content string `json:"content" binding:"required"`
 }
 
 type updatePostInput struct {
+	Title   string `json:"title"`
+	Content string `json:"content"`
 }
 
 // FindPosts is get all posts
@@ -26,13 +30,20 @@ func FindPosts(c *gin.Context) {
 
 // CreatePost is create a post
 func CreatePost(c *gin.Context) {
+	db := c.MustGet("db").(*gorm.DB)
+
 	var input createPostInput
+
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": "data"})
+	post := models.Post{Title: input.Title, Content: input.Content}
+
+	db.Create(&post)
+
+	c.JSON(http.StatusOK, post)
 }
 
 // FindPost is find a post
@@ -45,7 +56,7 @@ func FindPost(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": post})
+	c.JSON(http.StatusOK, post)
 }
 
 // UpdatePost is update a post

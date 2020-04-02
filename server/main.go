@@ -12,12 +12,11 @@ import (
 	myDB "github.com/gmlwo530/maru-web-app-project/db"
 )
 
-func main() {
-	mode := os.Getenv("GIN_MODE")
+// SetGin is function to make *gin.Engine and to set database and router
+func SetGin() *gin.Engine {
 	g := gin.Default()
 
 	g.Use(static.Serve("/", static.LocalFile("./web", true)))
-	
 
 	db := myDB.SetupModels()
 
@@ -31,13 +30,23 @@ func main() {
 
 	api := g.Group("/api")
 	api.GET("/ping", controllers.GetPing)
+	api.GET("/posts", controllers.FindPosts)
+	api.POST("/posts", controllers.CreatePost)
+	api.GET("/posts/:id", controllers.FindPost)
+
+	return g
+}
+
+func main() {
+	mode := os.Getenv("GIN_MODE")
+	g := SetGin()
 
 	if mode == "release" {
 		port := os.Getenv("PORT")
 		if port == "" {
 			log.Fatal("$PORT must be set")
 		}
-		log.Fatal(http.ListenAndServe(":" + port, g))
+		log.Fatal(http.ListenAndServe(":"+port, g))
 	} else {
 		port := ":8080"
 		log.Fatal(http.ListenAndServe(port, g))
