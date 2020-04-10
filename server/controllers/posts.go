@@ -25,7 +25,7 @@ func FindPosts(c *gin.Context) {
 	var posts []models.Post
 	db.Find(&posts)
 
-	c.JSON(http.StatusOK, gin.H{"data": posts})
+	c.JSON(http.StatusOK, posts)
 }
 
 // CreatePost is create a post
@@ -52,7 +52,7 @@ func FindPost(c *gin.Context) {
 
 	var post models.Post
 	if err := db.Where("id = ?", c.Param("id")).First(&post).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "Record not found!"})
 		return
 	}
 
@@ -77,7 +77,7 @@ func UpdatePost(c *gin.Context) {
 
 	db.Model(&post).Updates(input)
 
-	c.JSON(http.StatusOK, gin.H{"data": post})
+	c.JSON(http.StatusOK, post)
 }
 
 // DeletePost is delete a post

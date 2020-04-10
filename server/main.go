@@ -33,6 +33,8 @@ func SetGin() *gin.Engine {
 	api.GET("/posts", controllers.FindPosts)
 	api.POST("/posts", controllers.CreatePost)
 	api.GET("/posts/:id", controllers.FindPost)
+	api.PUT("/posts/:id", controllers.UpdatePost)
+	api.DELETE("/posts/:id", controllers.DeletePost)
 
 	return g
 }

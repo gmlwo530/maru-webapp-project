@@ -1,12 +1,13 @@
 package controllers
 
 import (
+	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gmlwo530/maru-web-app-project/db/models"
 	"github.com/jinzhu/gorm"
-	"net/http"
-	"time"
-	"fmt"
 )
 
 func createPing(c *gin.Context) {
@@ -14,18 +15,16 @@ func createPing(c *gin.Context) {
 
 	ping := models.Ping{CreatedAt: time.Now()}
 	db.Create(&ping)
-
-
 }
 
 // GetPing is get ping
-func GetPing(c *gin.Context){
+func GetPing(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
 
 	defer createPing(c)
 
 	var ping models.Ping
-	
+
 	message := "first time!"
 
 	if !db.Order("created_at").Last(&ping).RecordNotFound() {
